@@ -13,7 +13,10 @@ class TweetResponse {
     final contentList = json['content'] as List<dynamic>? ?? [];
     return TweetResponse(
       content: contentList
-          .map((tweet) => Tweet.fromJson(tweet as Map<String, dynamic>))
+          .map((tweet) {
+            final tweetMap = Map<String, dynamic>.from(tweet as Map);
+            return Tweet.fromJson(tweetMap);
+          })
           .toList(),
     );
   }

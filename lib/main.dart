@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'services/tweet_service.dart';
+import 'services/auth_service.dart';
 import 'models/tweet.dart';
+import 'screens/login_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final authService = AuthService();
+  await authService.init();
   runApp(const MyApp());
 }
 
@@ -17,8 +22,21 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Tweeter - REST API Integration'),
+      home: _buildHome(),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/home': (context) => const MyHomePage(title: 'Tweeter - REST API Integration'),
+      },
     );
+  }
+
+  Widget _buildHome() {
+    final authService = AuthService();
+    if (authService.isAuthenticated()) {
+      return const MyHomePage(title: 'Tweeter - REST API Integration');
+    } else {
+      return const LoginScreen();
+    }
   }
 }
 
@@ -34,6 +52,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // Using the singleton instance
   late TweetService _tweetService;
+  late AuthService _authService;
   late Future<List<Tweet>> _tweetsFuture;
   final TextEditingController _tweetController = TextEditingController();
   bool _isLoading = false;
@@ -41,8 +60,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    // Get the singleton instance
+    // Get the singleton instances
     _tweetService = TweetService();
+    _authService = AuthService();
     _loadTweets();
   }
 
@@ -51,6 +71,17 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _tweetsFuture = _tweetService.fetchTweets();
     });
+  }
+
+  /// Handle logout
+  Future<void> _logout() async {
+    await _authService.logout();
+    if (mounted) {
+      Navigator.of(context).pushReplacementNamed('/login');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sesión cerrada')),
+      );
+    }
   }
 
   /// Create a new tweet
@@ -164,11 +195,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final user = _authService.getUser();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         elevation: 2,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Center(
+              child: Text(
+                'Usuario: ${user?.username ?? "Unknown"}',
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
+          ),
+          PopupMenuButton(
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem(
+                onTap: _logout,
+                child: const Text('Cerrar Sesión'),
+              ),
+            ],
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -226,7 +277,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      
     );
   }
 

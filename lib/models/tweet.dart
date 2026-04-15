@@ -9,9 +9,12 @@ class Tweet {
 
   /// Convert JSON to Tweet object
   factory Tweet.fromJson(Map<String, dynamic> json) {
+    final id = json['id'];
+    final tweetContent = json['tweet'];
+    
     return Tweet(
-      id: json['id'] ?? '',
-      tweet: json['tweet'] ?? '',
+      id: id is int ? id : (id is String ? int.tryParse(id) ?? 0 : 0),
+      tweet: tweetContent is String ? tweetContent : tweetContent?.toString() ?? '',
     );
   }
 
