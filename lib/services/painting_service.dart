@@ -4,7 +4,7 @@ import '../models/painting.dart';
 import 'auth_service.dart';
 
 class PaintingService {
-  final String baseUrl = 'https://tweeter-api-4txv.onrender.com/api/paintings';
+  final String baseUrl = 'https://api-galeria-pinturas-1.onrender.com/api/paintings';
   final AuthService _authService = AuthService();
 
   Future<List<Painting>> fetchPaintings() async {

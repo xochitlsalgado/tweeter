@@ -6,7 +6,7 @@ import '../models/user.dart';
 class AuthService {
   static final AuthService _instance = AuthService._internal();
   // URL local para tus pruebas
-  final String baseUrl = 'https://tweeter-api-4txv.onrender.com/api'; 
+  final String baseUrl = 'https://api-galeria-pinturas-1.onrender.com/api'; 
   late http.Client _httpClient;
   SharedPreferences? _prefs;
 
