@@ -1,7 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<<<<<<< HEAD
     
     <uses-permission android:name="android.permission.INTERNET" />
  
+=======
+<uses-permission android:name="android.permission.INTERNET" />
+>>>>>>> 9ba01315fa07469fe69784858ebfc85f7a5d1467
     <application
         android:label="tweeter"
         android:name="${applicationName}"
